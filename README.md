@@ -5,5 +5,9 @@ Its instruction set contains 27 instructions, some of which are variations of on
 
 Comes with logisim-evolution files and an (unstable imo) emulator. Have fun messing with it.
 
+Trust me, once you get to the ALU instruction implementation in the source code, you don't want to live anymore.
+My excuse: I was drunk and tired.
+Have fun.
+
 ![This is an image](https://github.com/Ranchonyx/Flix-16/blob/main/FLIX-16.png)
 ![This is an image](https://github.com/Ranchonyx/Flix-16/blob/main/FLIX-16-Chip.png)
