@@ -15,7 +15,9 @@ Have fun.
 ## The Logisim Wiring Diagram of the Flix-16's internals
 ![Insert Generic Image Alt Text Here...](https://github.com/Ranchonyx/Flix-16/blob/main/FLIX-16.png)
 
-## The 16-Bit Arithmetic and Logic Unit (ALU) implemented using a carry-cascade style array of 1-Bit ALU's.
+## The 16-Bit Arithmetic and Logic Unit (ALU)
+This ALU is implemented using a carry-cascade style array of 1-Bit ALU's.
+![Insert Generic Image Alt Text Here...](https://github.com/Ranchonyx/Flix-16/blob/main/Flix-16-ALU.png)
 
 ## A Flix-16 Build showing an attached hexadecimal digit display.
 The program in the ROM chip to the left is a simple countdown from 0xff to 0x00 which is being displayed on aforementioned display.
