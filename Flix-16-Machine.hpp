@@ -162,14 +162,17 @@ public:
 		return mnemonics[opcode];
 	}
 
+	//Oooo scary memory leak possibility
 	std::string toAssembly() {
 		char* tmp = (char*) malloc(128);
 		assert(tmp != 0);
+		//I love C functions too much to learn all the new c++ stuff ;-;
 		//[00 00 00] -> INSTR RA RB / INSTR VAL
 		sprintf_s(tmp, 128, "[%02x %02x %02x] -> %5s (%2s %2s) (%04x)",
 			opcode, reg_a, reg_b, mnemonics[opcode].c_str(), regToString(reg_a).c_str(), regToString(reg_b).c_str(), value
 		);
 		assert(tmp != 0);
+		//This is some unholy c++ magic
 		std::string str_tmp = tmp;
 		return str_tmp;
 	}
