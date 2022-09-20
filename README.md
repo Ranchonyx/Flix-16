@@ -10,6 +10,13 @@
 <br>
 <br>
 
+[![Button Logism]][Logism]   
+[![Button Emulator]][Emulator]   
+[![Button Instruction Set]][Instruction Set]
+
+<br>
+<br>
+
 ## Features
 
 <br>
@@ -98,4 +105,13 @@ I was tired and lazy, which isn't really an excuse but eh.
 
 <!----------------------------------------------------------------------------->
 
+[Instruction Set]: Documentation/Instruction%20Set.md
+[Emulator]: Source/Emulator
+[Logism]: Source/Logism
 
+
+<!---------------------------------[ Buttons ]--------------------------------->
+
+[Button Instruction Set]: https://img.shields.io/badge/Instruction_Set-006272?style=for-the-badge&logoColor=white&logo=Buffer
+[Button Emulator]: https://img.shields.io/badge/Emulator-00897B?style=for-the-badge&logoColor=white&logo=GNUBash
+[Button Logism]: https://img.shields.io/badge/Logism-A22430?style=for-the-badge&logoColor=white&logo=Node-RED
