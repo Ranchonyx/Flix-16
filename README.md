@@ -7,8 +7,6 @@
 
 *My small 16-bit processor.*
 
-</div>
-
 <br>
 <br>
 
@@ -16,29 +14,21 @@
 
 <br>
 
--   **Emulator Implementation**
+<kbd> <br><br> **Emulator Implementation** <br><br> </kbd>   
+<kbd> <br><br> **Logism-Evolution Files** <br><br> </kbd>   
+<kbd> <br> **27 Instructions** <br><br> *Some are variations of others.* <br> </kbd>
 
-    <br>
-
--   **Logism-Evolution Files**
-
-    <br>
-
--   **27 Instructions**
-
-    *Some are variations of others.*
-    
 <br>
 <br>
 
-## Beware!
+## ⚠  Beware  ⚠
+
+<br>
 
 Trust me, once you get to the implementation of <br>
 the ALU instructions, you will regret looking at this.
 
 <br>
-
-#### My Excuse
 
 I was tired and lazy, which isn't really an excuse but eh.
 
@@ -46,8 +36,6 @@ I was tired and lazy, which isn't really an excuse but eh.
 
 <br>
 <br>
-
-<div align = center>
 
 ## Showcase
 
