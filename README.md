@@ -1,24 +1,113 @@
+
+<br>
+
+<div align = center>
+
 # Flix-16
-Flix-16 is a small project of mine, it implements a small 16-bit processor.
 
-Its instruction set contains 27 instructions, some of which are variations of one another.
+*My small 16-bit processor.*
 
-It comes with logisim-evolution files and a (somewhat stable) emulator. Have fun messing with it.
+</div>
 
-Trust me, once you get to the ALU instruction implementation in the source code, you will regret looking at this
-My excuse: I was tired and lazy, which isn't really an excuse but eh.
-Have fun.
+<br>
+<br>
 
-## The Logisim Chip design
-![Insert Generic Image Alt Text Here...](https://github.com/Ranchonyx/Flix-16/blob/main/FLIX-16-Chip.png)
+## Features
 
-## The Logisim Wiring Diagram of the Flix-16's internals
-![Insert Generic Image Alt Text Here...](https://github.com/Ranchonyx/Flix-16/blob/main/FLIX-16.png)
+<br>
 
-## The 16-Bit Arithmetic and Logic Unit (ALU)
-This ALU is implemented using a carry-cascade style array of 1-Bit ALU's.
-![Insert Generic Image Alt Text Here...](https://github.com/Ranchonyx/Flix-16/blob/main/Flix-16-ALU.png)
+-   **Emulator Implementation**
 
-## A Flix-16 Build showing an attached hexadecimal digit display.
-The program in the ROM chip to the left is a simple countdown from 0xff to 0x00 which is being displayed on aforementioned display.
-![Insert Generic Image Alt Text Here...](https://github.com/Ranchonyx/Flix-16/blob/main/Flix-16-Build.png)
+    <br>
+
+-   **Logism-Evolution Files**
+
+    <br>
+
+-   **27 Instructions**
+
+    *Some are variations of others.*
+    
+<br>
+<br>
+
+## Beware!
+
+Trust me, once you get to the implementation of <br>
+the ALU instructions, you will regret looking at this.
+
+<br>
+
+#### My Excuse
+
+I was tired and lazy, which isn't really an excuse but eh.
+
+***Have fun.***
+
+<br>
+<br>
+
+<div align = center>
+
+## Showcase
+
+*Diagrams of the **Logism** wiring.*
+
+<br>
+
+### Chip Design
+
+<br>
+
+<img
+    src = 'Assets/Chip.png'
+    width = 300
+/>
+
+<br>
+
+### CPU Internals
+
+<br>
+
+<img
+    src = 'Assets/Wiring.png'
+    width = 500
+/>
+
+<br>
+
+### 16-Bit ALU
+
+*This Arithmetic Logic Unit is implemented using* <br>
+*a carry-cascade style array of  `1 Bit`  ALU's.*
+
+<br>
+
+<img
+    src = 'Assets/ALU.png'
+    width = 500
+/>
+
+<br>
+
+### Test Setup
+
+*The program in the ROM chip to the left is a simple countdown from <br>
+`0xff - 0x00`  which is being displayed on aforementioned display.*
+
+<br>
+
+<img
+    src = 'Assets/Build.png'
+    width = 500
+/>
+
+</div>
+
+<br>
+
+
+<!----------------------------------------------------------------------------->
+
+
