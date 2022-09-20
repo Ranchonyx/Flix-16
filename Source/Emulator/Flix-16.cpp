@@ -18,24 +18,30 @@
 #define RESET "\033[m"
 
 using namespace std::chrono;
+using std::cout;
+using std::endl;
+using std::vector;
 
-std::vector<uint8_t> v_op;
-std::vector<uint8_t> v_ra;
-std::vector<uint8_t> v_rb;
-std::vector<char> program;
 
-std::vector<uint16_t> alu_results;
+vector<uint8_t> 
+	v_op , v_ra , v_rb;
 
-std::vector<uint16_t> BreakPointIPs;
+vector<char> program;
+
+vector<uint16_t> 
+	BreakPointIPs ,
+	alu_results ;
+
 
 //Memory
 Instruction*	ROM = new Instruction[0xFFFF];
 uint16_t		RAM[0xFFFF];
 
 //Registers
-uint16_t	register_a;
-uint16_t	register_b;
-uint16_t	register_c;
+uint16_t
+	register_a ,
+	register_b ,
+	register_c ;
 
 //Binary counter feeds into IP
 uint16_t	counter = 0;
@@ -127,12 +133,12 @@ uint16_t ALU_CALC(ALU_OP op, uint16_t reg_a, uint16_t reg_b) {
 	if (op == ALU_OP::ADD || op == ALU_OP::SUB) {
 		if (result == 0) {
 			flags.set(3);
-			std::cout << "[" << IP << "]" << "[ALU]->ZF SET" << std::endl;
+			cout << "[" << IP << "]" << "[ALU]->ZF SET" << endl;
 		}
 
 		if (result < 0) {
 			flags.set(1);
-			std::cout << "NF SET" << std::endl;
+			cout << "NF SET" << endl;
 		}
 	}
 
@@ -144,19 +150,19 @@ void handleUserInput() {
 	if (GetKeyState((USHORT)'B') & 0x8000) {
 		//Handle breakpoint addition at IP
 		paused = true;
-		std::cout << "Enter breakpoint IP: ";
+		cout << "Enter breakpoint IP: ";
 		uint16_t brk = 0;
 		std::cin >> brk;
 
 		if (std::find(BreakPointIPs.begin(), BreakPointIPs.end(), brk) != BreakPointIPs.end()) {
 			//If breakpoint already exists, remove it.
 
-			std::cout << "Removed Breakpoint" << std::endl;
+			cout << "Removed Breakpoint" << endl;
 			BreakPointIPs.erase(std::remove(BreakPointIPs.begin(), BreakPointIPs.end(), brk), BreakPointIPs.end());
 		}
 		else {
 
-			std::cout << "Added Breakpoint" << std::endl;
+			cout << "Added Breakpoint" << endl;
 			BreakPointIPs.push_back(brk);
 		}
 
@@ -183,7 +189,7 @@ void handleUserInput() {
 	}
 	if (GetKeyState((USHORT)'F') & 0x8000) {
 		paused = true;
-		std::cout << "Enter delay in nanoseconds (default = 2500ns): ";
+		cout << "Enter delay in nanoseconds (default = 2500ns): ";
 		std::cin >> delay;
 		paused = false;
 	}
@@ -199,42 +205,42 @@ void handleUserInput() {
 		paused = true;
 		std::string sel = "";
 		std::ofstream file;
-		std::cout << "--------- Dumpage menu ---------" << std::endl;
-		std::cout << "Register State        (r)" << std::endl;
-		std::cout << "RAM State             (rr)" << std::endl;
-		std::cout << "ALU Results           (rrr)" << std::endl;
-		std::cout << "Full Hardware State   (rrrr)" << std::endl;
+		cout << "--------- Dumpage menu ---------" << endl;
+		cout << "Register State        (r)" << endl;
+		cout << "RAM State             (rr)" << endl;
+		cout << "ALU Results           (rrr)" << endl;
+		cout << "Full Hardware State   (rrrr)" << endl;
 
 		std::cin >> sel;
 		if(sel == "r") {
 
 			file.open("regstate.txt");
-			file << "----- Registers -----" << std::endl;
-			file << "A   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_a << std::endl;
-			file << "B   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_b << std::endl;
-			file << "C   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_c << std::endl;
-			file << "F   " << std::setfill('0') << std::setw(4) << flags << std::endl;
-			file << "IP  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)IP << std::endl;
-			file << "CTR " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)counter << std::endl;
+			file << "----- Registers -----" << endl;
+			file << "A   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_a << endl;
+			file << "B   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_b << endl;
+			file << "C   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_c << endl;
+			file << "F   " << std::setfill('0') << std::setw(4) << flags << endl;
+			file << "IP  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)IP << endl;
+			file << "CTR " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)counter << endl;
 
-			file << "----- STATUS -----" << std::endl;
-			file << "OB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)outbus << std::endl;
-			file << "IB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)inbus << std::endl;
-			file << "HLT " << halted << std::endl;
+			file << "----- STATUS -----" << endl;
+			file << "OB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)outbus << endl;
+			file << "IB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)inbus << endl;
+			file << "HLT " << halted << endl;
 			file.close();
 
 		}
 		if (sel == "rr") {
 
 			file.open("ramstate.txt");
-			file << "----- RAM -----" << std::endl;
+			file << "----- RAM -----" << endl;
 			for (int i = 0; i < 0xffff; i++) {
 				if (i % 16 == 0) {
-					file << std::endl;
+					file << endl;
 				}
 				file << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)RAM[i] << " ";
 			}
-			file << std::endl;
+			file << endl;
 			file.close();
 
 		}
@@ -242,53 +248,53 @@ void handleUserInput() {
 
 			file.open("aluresults.txt");
 
-			file << "----- ALU -----" << std::endl;
+			file << "----- ALU -----" << endl;
 			for (int i = 0; i < alu_results.size(); i++) {
 				if (i % 16 == 0) {
-					file << std::endl;
+					file << endl;
 				}
 				file << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)alu_results[i] << " ";
 			}
-			file << std::endl;
+			file << endl;
 			file.close();
 
 		}
 		if (sel == "rrrr") {
 			file.open("fullhardwarestate.txt");
 
-			file << "----- Registers -----" << std::endl;
-			file << "A   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_a << std::endl;
-			file << "B   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_b << std::endl;
-			file << "C   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_c << std::endl;
-			file << "F   " << std::setfill('0') << std::setw(4) << flags << std::endl;
-			file << "IP  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)IP << std::endl;
-			file << "CTR " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)counter << std::endl;
+			file << "----- Registers -----" << endl;
+			file << "A   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_a << endl;
+			file << "B   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_b << endl;
+			file << "C   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_c << endl;
+			file << "F   " << std::setfill('0') << std::setw(4) << flags << endl;
+			file << "IP  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)IP << endl;
+			file << "CTR " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)counter << endl;
 
-			file << "----- STATUS -----" << std::endl;
-			file << "OB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)outbus << std::endl;
-			file << "IB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)inbus << std::endl;
-			file << "HLT " << halted << std::endl;
+			file << "----- STATUS -----" << endl;
+			file << "OB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)outbus << endl;
+			file << "IB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)inbus << endl;
+			file << "HLT " << halted << endl;
 
-			file << "----- ALU -----" << std::endl;
+			file << "----- ALU -----" << endl;
 			for (int i = 0; i < alu_results.size(); i++) {
 				if (i % 16 == 0 && i != 0) {
-					file << std::endl;
+					file << endl;
 				}
 				file << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)alu_results[i] << " ";
 			}
-			file << std::endl;
+			file << endl;
 
-			file << "----- RAM -----" << std::endl;
+			file << "----- RAM -----" << endl;
 			for (int i = 0; i < 0xffff; i++) {
 				if (i % 16 == 0 && i != 0) {
-					file << std::endl;
+					file << endl;
 				}
 				file << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)RAM[i] << " ";
 			}
-			file << std::endl;
+			file << endl;
 
 		}
-		std::cout << "Invalid Input." << std::endl;
+		cout << "Invalid Input." << endl;
 		clear(mainConsole);
 		paused = false;
 	}
@@ -298,10 +304,10 @@ void handleBreakPointHit() {
 	if (std::find(BreakPointIPs.begin(), BreakPointIPs.end(), IP) != BreakPointIPs.end()) {
 		//If breakpoint found in list is hit:
 		clear(mainConsole);
-		std::cout << ESC << BLACK ";" << RED << "m";
-		std::cout << "[" << std::hex << std::setfill('0') << std::setw(2) << (int)(unsigned char)IP << "]" << " ";
-		std::cout << "Breakpoint hit!" << std::endl;
-		std::cout << ROM[IP].toAssembly() << RESET << std::endl;
+		cout << ESC << BLACK ";" << RED << "m";
+		cout << "[" << std::hex << std::setfill('0') << std::setw(2) << (int)(unsigned char)IP << "]" << " ";
+		cout << "Breakpoint hit!" << endl;
+		cout << ROM[IP].toAssembly() << RESET << endl;
 		paused = true;
 	}
 }
@@ -310,13 +316,13 @@ void init() {
 
 	char byte = 0;
 	std::string filename;
-	std::cout << "Flix-16 Emulator. https://github.com/Ranchonyx" << std::endl;
-	std::cout << "Enter path to a valid Flix-16 Program: ";
+	cout << "Flix-16 Emulator. https://github.com/Ranchonyx" << endl;
+	cout << "Enter path to a valid Flix-16 Program: ";
 	std::cin >> filename;
 	std::ifstream input_file(filename);
 
 	if (!input_file.is_open()) {
-		std::cerr << "Cannot open file: '" << filename << "'" << std::endl;
+		std::cerr << "Cannot open file: '" << filename << "'" << endl;
 		exit(EXIT_FAILURE);
 	}
 
@@ -337,9 +343,9 @@ void init() {
 	}
 
 	for (int i = 0; i < v_op.size(); i++) {
-		std::cout << v_op[i] << std::endl;
-		std::cout << v_ra[i] << std::endl;
-		std::cout << v_rb[i] << std::endl;
+		cout << v_op[i] << endl;
+		cout << v_ra[i] << endl;
+		cout << v_rb[i] << endl;
 
 		ROM[i] = Instruction(v_op[i], v_ra[i], v_rb[i]);
 	}
@@ -351,24 +357,24 @@ void init() {
 int main(int argc, char* argv[]) {
 
 	init();
-	std::cout << "Program loaded. Displaying...\n" << std::endl;
+	cout << "Program loaded. Displaying...\n" << endl;
 
 	for (int i = 0; i < v_op.size(); i++) {
-		std::cout << "[" << std::setw(3) << i << "] " << ROM[i].toAssembly() << std::endl;
+		cout << "[" << std::setw(3) << i << "] " << ROM[i].toAssembly() << endl;
 	}
-	std::cout << std::endl;
+	cout << endl;
 
-	std::cout << "----- Simulation Controls -----" << std::endl;
-	std::cout << "Y - Pause execution." << std::endl;
-	std::cout << "X - Resume execution." << std::endl;
-	std::cout << "D - Switch to debug view." << std::endl;
-	std::cout << "F - Adjust sim. clock frequency." << std::endl;
-	std::cout << "B - Insert breakpoints at IP." << std::endl;
-	std::cout << "S - Increment counter by 1." << std::endl;
-	std::cout << "C - Open dumpage menu." << std::endl;
-	std::cout << std::endl;
+	cout << "----- Simulation Controls -----" << endl;
+	cout << "Y - Pause execution." << endl;
+	cout << "X - Resume execution." << endl;
+	cout << "D - Switch to debug view." << endl;
+	cout << "F - Adjust sim. clock frequency." << endl;
+	cout << "B - Insert breakpoints at IP." << endl;
+	cout << "S - Increment counter by 1." << endl;
+	cout << "C - Open dumpage menu." << endl;
+	cout << endl;
 
-	std::cout << "Press any key to execute..." << std::endl;
+	cout << "Press any key to execute..." << endl;
 	int gb1 = _getch();
 
 
@@ -390,9 +396,9 @@ int main(int argc, char* argv[]) {
 			uint16_t imm16 = ROM[IP].get_value();
 
 			SetConsoleTitleA("Executing...");
-			std::cout << "[" << std::hex << std::setfill('0') << std::setw(2) << (int)(unsigned char)IP << "]" << " ";
-			std::cout << "Executing ";
-			std::cout << "(" << disasm << ")" << std::endl;
+			cout << "[" << std::hex << std::setfill('0') << std::setw(2) << (int)(unsigned char)IP << "]" << " ";
+			cout << "Executing ";
+			cout << "(" << disasm << ")" << endl;
 
 			//Shitton of code
 			
@@ -563,7 +569,7 @@ int main(int argc, char* argv[]) {
 				break;
 			case 0x15 :
 
-				std::cout << "Program Halted, press any key to exit." << std::endl;
+				cout << "Program Halted, press any key to exit." << endl;
 			
 				gb1 = _getch();
 				halted = true;
@@ -613,57 +619,57 @@ int main(int argc, char* argv[]) {
 				break;
 			default :
 
-				std::cout << "Unimplemented instruction!" << std::endl;
+				cout << "Unimplemented instruction!" << endl;
 			
 				exit(EXIT_FAILURE);
 			}
-			
+
 			std::this_thread::sleep_for(nanoseconds(delay));
 
 			IP = counter;
 
 			//Write debug stuff to other console
 			std::stringstream debugConsoleBuffer;
-			old = std::cout.rdbuf(debugConsoleBuffer.rdbuf());
+			old = cout.rdbuf(debugConsoleBuffer.rdbuf());
 
-			std::cout << "----- INSTRUCTION -----" << std::endl;
-			std::cout << "(" << disasm << ")" << std::endl;
+			cout << "----- INSTRUCTION -----" << endl;
+			cout << "(" << disasm << ")" << endl;
 
-			std::cout << "----- RAM -----" << std::endl;
+			cout << "----- RAM -----" << endl;
 			for (int i = 0; i < 20; i++) {
 				if (i % 5 == 0) {
-					std::cout << std::endl;
+					cout << endl;
 				}
-				std::cout << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)RAM[i] << " ";
+				cout << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)RAM[i] << " ";
 			}
-			std::cout << std::endl;
+			cout << endl;
 			
-			std::cout << "----- ALU RESULTS -----" << std::endl;
+			cout << "----- ALU RESULTS -----" << endl;
 				for (int i = 0; i < alu_results.size(); i++) {
 					if (i % 25 == 0) {
-						std::cout << std::endl;
+						cout << endl;
 					}
-					std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)(unsigned char)alu_results[i] << " ";
+					cout << std::hex << std::setfill('0') << std::setw(2) << (int)(unsigned char)alu_results[i] << " ";
 				}
-				std::cout << std::endl;
+				cout << endl;
 
-			std::cout << "----- Registers -----" << std::endl;
-			std::cout << "A   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_a << std::endl;
-			std::cout << "B   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_b << std::endl;
-			std::cout << "C   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_c << std::endl;
-			std::cout << "F   " << std::setfill('0') << std::setw(4) << flags << std::endl;
-			std::cout << "IP  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)IP << std::endl;
-			std::cout << "CTR " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)counter << std::endl;
+			cout << "----- Registers -----" << endl;
+			cout << "A   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_a << endl;
+			cout << "B   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_b << endl;
+			cout << "C   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_c << endl;
+			cout << "F   " << std::setfill('0') << std::setw(4) << flags << endl;
+			cout << "IP  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)IP << endl;
+			cout << "CTR " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)counter << endl;
 
-			std::cout << "----- STATUS -----" << std::endl;
-			std::cout << "OB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)outbus << std::endl;
-			std::cout << "IB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)inbus << std::endl;
-			std::cout << "HLT " << halted << std::endl;
+			cout << "----- STATUS -----" << endl;
+			cout << "OB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)outbus << endl;
+			cout << "IB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)inbus << endl;
+			cout << "HLT " << halted << endl;
 			std::string text = debugConsoleBuffer.str();
 			clear(debugConsole);
 			WriteConsoleA(debugConsole, text.c_str(), text.length(), NULL, NULL);
 
-			std::cout.rdbuf(old);
+			cout.rdbuf(old);
 			
 
 		handleUserInput();
@@ -671,9 +677,13 @@ int main(int argc, char* argv[]) {
 
 		//std::this_thread::sleep_until(system_clock::now() + 1s);
 	}
-	std::cout.rdbuf(old);
-	std::cout << std::endl;
-	std::cout << "Execution finished." << std::endl;
+	
+	cout.rdbuf(old);
+	
+	cout 
+		<< endl;
+		<< "Execution finished." 
+		<< endl;
 
 	return EXIT_SUCCESS;
 }
