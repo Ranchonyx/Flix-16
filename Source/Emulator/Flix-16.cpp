@@ -287,376 +287,382 @@ void handleUserInput() {
 	}
 }
 
+
 void handleBreakPointHit() {
-	if (std::find(BreakPointIPs.begin(), BreakPointIPs.end(), IP) != BreakPointIPs.end()) {
-		//If breakpoint found in list is hit:
-		clear(mainConsole);
-		cout << ESC << BLACK ";" << RED << "m";
-		cout << "[" << std::hex << std::setfill('0') << std::setw(2) << (int)(unsigned char)IP << "]" << " ";
-		cout << "Breakpoint hit!" << endl;
-		cout << ROM[IP].toAssembly() << RESET << endl;
-		paused = true;
-	}
+
+    if(!std::find(BreakPointIPs.begin(), BreakPointIPs.end(), IP) != BreakPointIPs.end())
+        return;
+
+    //If breakpoint found in list is hit:
+
+    clear(mainConsole);
+
+    cout
+        << ESC << BLACK ";" << RED << "m"
+        << "[" << std::hex << std::setfill('0') << std::setw(2) << (int)(unsigned char)IP << "]" << " "
+        << "Breakpoint hit!" << endl
+        << ROM[IP].toAssembly() << RESET << endl;
+
+    paused = true;
 }
+
 
 void init() {
 
 	char byte = 0;
-	std::string filename;
+
 	cout << "Flix-16 Emulator. https://github.com/Ranchonyx" << endl;
 	cout << "Enter path to a valid Flix-16 Program: ";
+
+	std::string filename;
 	std::cin >> filename;
 	std::ifstream input_file(filename);
 
-	if (!input_file.is_open()) {
+	if(!input_file.is_open()){
 		std::cerr << "Cannot open file: '" << filename << "'" << endl;
 		exit(EXIT_FAILURE);
 	}
 
-	while (input_file.get(byte)) {
+
+	while(input_file.get(byte))
 		program.push_back(byte);
-	}
 
-	for (int i = 0; i < program.size(); i += 3) {
-		v_op.push_back(program[i]);
-	}
 
-	for (int i = 1; i < program.size(); i += 3) {
-		v_ra.push_back(program[i]);
-	}
+	for(int i = 0; i < program.size(); i += 3){
+		v_op.push_back(program[i + 0]);
+		v_ra.push_back(program[i + 1]);
+		v_rb.push_back(program[i + 2]);
 
-	for (int i = 2; i < program.size(); i += 3) {
-		v_rb.push_back(program[i]);
-	}
-
-	for (int i = 0; i < v_op.size(); i++) {
-		cout << v_op[i] << endl;
+        cout << v_op[i] << endl;
 		cout << v_ra[i] << endl;
 		cout << v_rb[i] << endl;
 
-		ROM[i] = Instruction(v_op[i], v_ra[i], v_rb[i]);
-	}
+		ROM[i] = Instruction(v_op[i],v_ra[i],v_rb[i]);
+    }
 
-	memset(RAM, 0, 0xFFFF);
+	memset(RAM,0,0xFFFF);
 	clear(mainConsole);
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc,char * argv[]){
 
 	init();
+
 	cout << "Program loaded. Displaying...\n" << endl;
 
-	for (int i = 0; i < v_op.size(); i++) {
+	for(int i = 0; i < v_op.size(); i++)
 		cout << "[" << std::setw(3) << i << "] " << ROM[i].toAssembly() << endl;
-	}
-	cout << endl;
 
-	cout << "----- Simulation Controls -----" << endl;
-	cout << "Y - Pause execution." << endl;
-	cout << "X - Resume execution." << endl;
-	cout << "D - Switch to debug view." << endl;
-	cout << "F - Adjust sim. clock frequency." << endl;
-	cout << "B - Insert breakpoints at IP." << endl;
-	cout << "S - Increment counter by 1." << endl;
-	cout << "C - Open dumpage menu." << endl;
-	cout << endl;
+	cout
+        << endl << "----- Simulation Controls -----"
+        << endl << "Y - Pause execution."
+        << endl << "X - Resume execution."
+        << endl << "D - Switch to debug view."
+        << endl << "F - Adjust sim. clock frequency."
+        << endl << "B - Insert breakpoints at IP."
+        << endl << "S - Increment counter by 1."
+        << endl << "C - Open dumpage menu."
+        << endl
+        << endl << "Press any key to execute..."
+        << endl ;
 
-	cout << "Press any key to execute..." << endl;
-	int gb1 = _getch();
+    int gb1 = _getch();
 
 
 	//Interprete Flix-16 Machine Code
-	while (!halted)
-	{
-		while (paused) {
+
+	while(!halted){
+
+		while(paused){
 			SetConsoleTitleA("Paused...");
 			handleUserInput();
 		}
-			counter++;
 
-			handleBreakPointHit();
+        counter++;
 
-			std::string disasm = ROM[IP].toAssembly();
-			uint8_t reg_a = ROM[IP].get_a();
-			uint8_t reg_b = ROM[IP].get_b();
-			uint8_t opcode = ROM[IP].get_opcode();
-			uint16_t imm16 = ROM[IP].get_value();
+        handleBreakPointHit();
 
-			SetConsoleTitleA("Executing...");
-			cout << "[" << std::hex << std::setfill('0') << std::setw(2) << (int)(unsigned char)IP << "]" << " ";
-			cout << "Executing ";
-			cout << "(" << disasm << ")" << endl;
+        std::string disasm = ROM[IP].toAssembly();
+        uint8_t reg_a = ROM[IP].get_a();
+        uint8_t reg_b = ROM[IP].get_b();
+        uint8_t opcode = ROM[IP].get_opcode();
+        uint16_t imm16 = ROM[IP].get_value();
 
-			//Shitton of code
+        SetConsoleTitleA("Executing...");
+        cout << "[" << std::hex << std::setfill('0') << std::setw(2) << (int)(unsigned char)IP << "]" << " ";
+        cout << "Executing ";
+        cout << "(" << disasm << ")" << endl;
 
-			switch (ROM[IP].get_opcode()){
+        //Shitton of code
 
-			case 0x00 : std::this_thread::sleep_for(5ms) ; break ;
+        switch (ROM[IP].get_opcode()){
 
-			case 0x01 : register_a = imm16 ; break ;
-			case 0x02 : register_b = imm16 ; break ;
-			case 0x03 : register_c = imm16 ; break ;
+        case 0x00 : std::this_thread::sleep_for(5ms) ; break ;
 
-			case 0x04 :	register_a = RAM[imm16] ; break ;
-			case 0x05 : register_b = RAM[imm16] ; break ;
-			case 0x06 : register_c = RAM[imm16] ; break ;
+        case 0x01 : register_a = imm16 ; break ;
+        case 0x02 : register_b = imm16 ; break ;
+        case 0x03 : register_c = imm16 ; break ;
 
-			case 0x07 : RAM[imm16] = register_a ; break ;
-			case 0x08 : RAM[imm16] = register_b ; break ;
-			case 0x09 :	RAM[imm16] = register_c ; break ;
-			case 0x0a :
-
-				uint16_t partner;
+        case 0x04 :	register_a = RAM[imm16] ; break ;
+        case 0x05 : register_b = RAM[imm16] ; break ;
+        case 0x06 : register_c = RAM[imm16] ; break ;
 
-				switch(reg_a){
-				case 0x00 : partner = register_a ; break ;
-				case 0x01 : partner = register_b ; break ;
-				case 0x02 : partner = register_c ; break ;
-				}
+        case 0x07 : RAM[imm16] = register_a ; break ;
+        case 0x08 : RAM[imm16] = register_b ; break ;
+        case 0x09 :	RAM[imm16] = register_c ; break ;
+        case 0x0a :
 
-				switch(reg_b){
-				case 0x00 : register_a = ALU_CALC(ALU_OP::ADD,partner,register_a) ; break ;
-				case 0x01 : register_b = ALU_CALC(ALU_OP::ADD,partner,register_b) ; break ;
-				case 0x02 : register_c = ALU_CALC(ALU_OP::ADD,partner,register_c) ; break ;
-				}
+            uint16_t partner;
 
-				break;
-			case 0x0b :
-
-				uint16_t partner;
+            switch(reg_a){
+            case 0x00 : partner = register_a ; break ;
+            case 0x01 : partner = register_b ; break ;
+            case 0x02 : partner = register_c ; break ;
+            }
 
-				switch(reg_a){
-				case 0x00 : partner = register_a ; break ;
-				case 0x01 : partner = register_b ; break ;
-				case 0x02 : partner = register_c ; break ;
-				}
+            switch(reg_b){
+            case 0x00 : register_a = ALU_CALC(ALU_OP::ADD,partner,register_a) ; break ;
+            case 0x01 : register_b = ALU_CALC(ALU_OP::ADD,partner,register_b) ; break ;
+            case 0x02 : register_c = ALU_CALC(ALU_OP::ADD,partner,register_c) ; break ;
+            }
 
-				switch(reg_b){
-				case 0x00 : register_a = ALU_CALC(ALU_OP::SUB,partner,register_a) ; break ;
-				case 0x01 : register_b = ALU_CALC(ALU_OP::SUB,partner,register_b) ; break ;
-				case 0x02 : register_c = ALU_CALC(ALU_OP::SUB,partner,register_c) ; break ;
-				}
+            break;
+        case 0x0b :
 
-				break;
-			case 0x0c :
+            uint16_t partner;
 
-				uint16_t partner;
+            switch(reg_a){
+            case 0x00 : partner = register_a ; break ;
+            case 0x01 : partner = register_b ; break ;
+            case 0x02 : partner = register_c ; break ;
+            }
 
-				switch(reg_a){
-				case 0x00 : partner = register_a ; break ;
-				case 0x01 : partner = register_b ; break ;
-				case 0x02 : partner = register_c ; break ;
-				}
+            switch(reg_b){
+            case 0x00 : register_a = ALU_CALC(ALU_OP::SUB,partner,register_a) ; break ;
+            case 0x01 : register_b = ALU_CALC(ALU_OP::SUB,partner,register_b) ; break ;
+            case 0x02 : register_c = ALU_CALC(ALU_OP::SUB,partner,register_c) ; break ;
+            }
 
-				switch(reg_b){
-				case 0x00 : register_a = ALU_CALC(ALU_OP::AND,partner,register_a) ; break ;
-				case 0x01 : register_b = ALU_CALC(ALU_OP::AND,partner,register_b) ; break ;
-				case 0x02 : register_c = ALU_CALC(ALU_OP::AND,partner,register_c) ; break ;
-				}
+            break;
+        case 0x0c :
 
+            uint16_t partner;
 
-				break;
-			case 0x0d :
+            switch(reg_a){
+            case 0x00 : partner = register_a ; break ;
+            case 0x01 : partner = register_b ; break ;
+            case 0x02 : partner = register_c ; break ;
+            }
 
-				uint16_t partner;
+            switch(reg_b){
+            case 0x00 : register_a = ALU_CALC(ALU_OP::AND,partner,register_a) ; break ;
+            case 0x01 : register_b = ALU_CALC(ALU_OP::AND,partner,register_b) ; break ;
+            case 0x02 : register_c = ALU_CALC(ALU_OP::AND,partner,register_c) ; break ;
+            }
 
-				switch(reg_a){
-				case 0x00 : partner = register_a ; break ;
-				case 0x01 : partner = register_b ; break ;
-				case 0x02 : partner = register_c ; break ;
-				}
 
-				switch(reg_b){
-				case 0x00 : register_a = ALU_CALC(ALU_OP::OR,partner,register_a) ; break ;
-				case 0x01 : register_b = ALU_CALC(ALU_OP::OR,partner,register_b) ; break ;
-				case 0x02 : register_c = ALU_CALC(ALU_OP::OR,partner,register_c) ; break ;
-				}
+            break;
+        case 0x0d :
 
-				break;
-			case 0x0e :
+            uint16_t partner;
 
-				uint16_t partner;
+            switch(reg_a){
+            case 0x00 : partner = register_a ; break ;
+            case 0x01 : partner = register_b ; break ;
+            case 0x02 : partner = register_c ; break ;
+            }
 
-				switch(reg_a){
-				case 0x00 : partner = register_a ; break ;
-				case 0x01 : partner = register_b ; break ;
-				case 0x02 : partner = register_c ; break ;
-				}
+            switch(reg_b){
+            case 0x00 : register_a = ALU_CALC(ALU_OP::OR,partner,register_a) ; break ;
+            case 0x01 : register_b = ALU_CALC(ALU_OP::OR,partner,register_b) ; break ;
+            case 0x02 : register_c = ALU_CALC(ALU_OP::OR,partner,register_c) ; break ;
+            }
 
-				switch(reg_b){
-				case 0x00 : register_a = ALU_CALC(ALU_OP::NOT,partner,register_a) ; break ;
-				case 0x01 : register_b = ALU_CALC(ALU_OP::NOT,partner,register_b) ; break ;
-				case 0x02 : register_c = ALU_CALC(ALU_OP::NOT,partner,register_c) ; break ;
-				}
+            break;
+        case 0x0e :
 
-				break;
-			case 0x0f :
+            uint16_t partner;
 
-				uint16_t partner;
+            switch(reg_a){
+            case 0x00 : partner = register_a ; break ;
+            case 0x01 : partner = register_b ; break ;
+            case 0x02 : partner = register_c ; break ;
+            }
 
-				switch(reg_a){
-				case 0x00 : partner = register_a ; break ;
-				case 0x01 : partner = register_b ; break ;
-				case 0x02 : partner = register_c ; break ;
-				}
+            switch(reg_b){
+            case 0x00 : register_a = ALU_CALC(ALU_OP::NOT,partner,register_a) ; break ;
+            case 0x01 : register_b = ALU_CALC(ALU_OP::NOT,partner,register_b) ; break ;
+            case 0x02 : register_c = ALU_CALC(ALU_OP::NOT,partner,register_c) ; break ;
+            }
 
-				switch(reg_b){
-				case 0x00 : register_a = ALU_CALC(ALU_OP::NOR,partner,register_a) ; break ;
-				case 0x01 : register_b = ALU_CALC(ALU_OP::NOR,partner,register_b) ; break ;
-				case 0x02 : register_c = ALU_CALC(ALU_OP::NOR,partner,register_c) ; break ;
-				}
-
-				break;
-			case 0x10 :
+            break;
+        case 0x0f :
 
-				uint16_t partner;
+            uint16_t partner;
 
-				switch(reg_a){
-				case 0x00 : partner = register_a ; break ;
-				case 0x01 : partner = register_b ; break ;
-				case 0x02 : partner = register_c ; break ;
-				}
+            switch(reg_a){
+            case 0x00 : partner = register_a ; break ;
+            case 0x01 : partner = register_b ; break ;
+            case 0x02 : partner = register_c ; break ;
+            }
 
-				switch(reg_b){
-				case 0x00 : register_a = ALU_CALC(ALU_OP::NAND,partner,register_a) ; break ;
-				case 0x01 : register_b = ALU_CALC(ALU_OP::NAND,partner,register_b) ; break ;
-				case 0x02 : register_c = ALU_CALC(ALU_OP::NAND,partner,register_c) ; break ;
-				}
+            switch(reg_b){
+            case 0x00 : register_a = ALU_CALC(ALU_OP::NOR,partner,register_a) ; break ;
+            case 0x01 : register_b = ALU_CALC(ALU_OP::NOR,partner,register_b) ; break ;
+            case 0x02 : register_c = ALU_CALC(ALU_OP::NOR,partner,register_c) ; break ;
+            }
 
-				break;
-			case 0x11 : counter = imm16 ; break;
-			case 0x12 :
+            break;
+        case 0x10 :
 
-				if(flags.test(3))
-					counter = imm16;
+            uint16_t partner;
 
-				break;
-			case 0x13 :
+            switch(reg_a){
+            case 0x00 : partner = register_a ; break ;
+            case 0x01 : partner = register_b ; break ;
+            case 0x02 : partner = register_c ; break ;
+            }
 
-				if(flags.test(1))
-					counter = imm16;
+            switch(reg_b){
+            case 0x00 : register_a = ALU_CALC(ALU_OP::NAND,partner,register_a) ; break ;
+            case 0x01 : register_b = ALU_CALC(ALU_OP::NAND,partner,register_b) ; break ;
+            case 0x02 : register_c = ALU_CALC(ALU_OP::NAND,partner,register_c) ; break ;
+            }
 
-				break;
-			case 0x14 :
-
-				uint16_t partner;
+            break;
+        case 0x11 : counter = imm16 ; break;
+        case 0x12 :
 
-				switch(reg_a){
-				case 0x00 : partner = register_a ; break ;
-				case 0x01 : partner = register_b ; break ;
-				case 0x02 : partner = register_c ; break ;
-				}
-
-				switch(reg_b){
-				case 0x00 : register_a = ALU_CALC(ALU_OP::XOR,partner,register_a) ; break ;
-				case 0x01 : register_b = ALU_CALC(ALU_OP::XOR,partner,register_b) ; break ;
-				case 0x02 : register_c = ALU_CALC(ALU_OP::XOR,partner,register_c) ; break ;
-				}
-
-				break;
-			case 0x15 :
-
-				cout << "Program Halted, press any key to exit." << endl;
-
-				gb1 = _getch();
-				halted = true;
-
-				break;
-			case 0x16 :	register_c = inbus ; break ;
-			case 0x17 :	outbus = register_c ; break ;
-			case 0x18 :
-
-				if(!flags.test(3))
-					counter = imm16;
-
-				break;
-			case 0x19 :
-
-				uint16_t partner;
-
-				switch(reg_a){
-				case 0x00 : partner = register_a ; break ;
-				case 0x01 : partner = register_b ; break ;
-				case 0x02 : partner = register_c ; break ;
-				}
-
-				switch(reg_b){
-				case 0x00 : register_a = ALU_CALC(ALU_OP::LSL1,partner,register_a) ; break ;
-				case 0x01 : register_b = ALU_CALC(ALU_OP::LSL1,partner,register_b) ; break ;
-				case 0x02 : register_c = ALU_CALC(ALU_OP::LSL1,partner,register_c) ; break ;
-				}
-
-				break;
-			case 0x1a:
-
-				uint16_t partner;
-
-				switch(reg_a){
-				case 0x00 : partner = register_a ; break ;
-				case 0x01 : partner = register_b ; break ;
-				case 0x02 : partner = register_c ; break ;
-				}
-
-				switch(reg_b){
-				case 0x00 : register_a = ALU_CALC(ALU_OP::LSR1,partner,register_a) ; break ;
-				case 0x01 : register_b = ALU_CALC(ALU_OP::LSR1,partner,register_b) ; break ;
-				case 0x02 : register_c = ALU_CALC(ALU_OP::LSR1,partner,register_c) ; break ;
-				}
-
-				break;
-			default :
-
-				cout << "Unimplemented instruction!" << endl;
-
-				exit(EXIT_FAILURE);
-			}
-
-			std::this_thread::sleep_for(nanoseconds(delay));
-
-			IP = counter;
-
-			//Write debug stuff to other console
-			std::stringstream debugConsoleBuffer;
-			old = cout.rdbuf(debugConsoleBuffer.rdbuf());
-
-			cout << "----- INSTRUCTION -----" << endl;
-			cout << "(" << disasm << ")" << endl;
-
-			cout << "----- RAM -----" << endl;
-			for (int i = 0; i < 20; i++) {
-				if (i % 5 == 0) {
-					cout << endl;
-				}
-				cout << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)RAM[i] << " ";
-			}
-			cout << endl;
-
-			cout << "----- ALU RESULTS -----" << endl;
-				for (int i = 0; i < alu_results.size(); i++) {
-					if (i % 25 == 0) {
-						cout << endl;
-					}
-					cout << std::hex << std::setfill('0') << std::setw(2) << (int)(unsigned char)alu_results[i] << " ";
-				}
-				cout << endl;
-
-			cout << "----- Registers -----" << endl;
-			cout << "A   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_a << endl;
-			cout << "B   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_b << endl;
-			cout << "C   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_c << endl;
-			cout << "F   " << std::setfill('0') << std::setw(4) << flags << endl;
-			cout << "IP  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)IP << endl;
-			cout << "CTR " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)counter << endl;
-
-			cout << "----- STATUS -----" << endl;
-			cout << "OB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)outbus << endl;
-			cout << "IB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)inbus << endl;
-			cout << "HLT " << halted << endl;
-			std::string text = debugConsoleBuffer.str();
-			clear(debugConsole);
-			WriteConsoleA(debugConsole, text.c_str(), text.length(), NULL, NULL);
-
-			cout.rdbuf(old);
+            if(flags.test(3))
+                counter = imm16;
+
+            break;
+        case 0x13 :
+
+            if(flags.test(1))
+                counter = imm16;
+
+            break;
+        case 0x14 :
+
+            uint16_t partner;
+
+            switch(reg_a){
+            case 0x00 : partner = register_a ; break ;
+            case 0x01 : partner = register_b ; break ;
+            case 0x02 : partner = register_c ; break ;
+            }
+
+            switch(reg_b){
+            case 0x00 : register_a = ALU_CALC(ALU_OP::XOR,partner,register_a) ; break ;
+            case 0x01 : register_b = ALU_CALC(ALU_OP::XOR,partner,register_b) ; break ;
+            case 0x02 : register_c = ALU_CALC(ALU_OP::XOR,partner,register_c) ; break ;
+            }
+
+            break;
+        case 0x15 :
+
+            cout << "Program Halted, press any key to exit." << endl;
+
+            gb1 = _getch();
+            halted = true;
+
+            break;
+        case 0x16 :	register_c = inbus ; break ;
+        case 0x17 :	outbus = register_c ; break ;
+        case 0x18 :
+
+            if(!flags.test(3))
+                counter = imm16;
+
+            break;
+        case 0x19 :
+
+            uint16_t partner;
+
+            switch(reg_a){
+            case 0x00 : partner = register_a ; break ;
+            case 0x01 : partner = register_b ; break ;
+            case 0x02 : partner = register_c ; break ;
+            }
+
+            switch(reg_b){
+            case 0x00 : register_a = ALU_CALC(ALU_OP::LSL1,partner,register_a) ; break ;
+            case 0x01 : register_b = ALU_CALC(ALU_OP::LSL1,partner,register_b) ; break ;
+            case 0x02 : register_c = ALU_CALC(ALU_OP::LSL1,partner,register_c) ; break ;
+            }
+
+            break;
+        case 0x1a:
+
+            uint16_t partner;
+
+            switch(reg_a){
+            case 0x00 : partner = register_a ; break ;
+            case 0x01 : partner = register_b ; break ;
+            case 0x02 : partner = register_c ; break ;
+            }
+
+            switch(reg_b){
+            case 0x00 : register_a = ALU_CALC(ALU_OP::LSR1,partner,register_a) ; break ;
+            case 0x01 : register_b = ALU_CALC(ALU_OP::LSR1,partner,register_b) ; break ;
+            case 0x02 : register_c = ALU_CALC(ALU_OP::LSR1,partner,register_c) ; break ;
+            }
+
+            break;
+        default :
+
+            cout << "Unimplemented instruction!" << endl;
+
+            exit(EXIT_FAILURE);
+        }
+
+        std::this_thread::sleep_for(nanoseconds(delay));
+
+        IP = counter;
+
+        //Write debug stuff to other console
+        std::stringstream debugConsoleBuffer;
+        old = cout.rdbuf(debugConsoleBuffer.rdbuf());
+
+        cout << "----- INSTRUCTION -----" << endl;
+        cout << "(" << disasm << ")" << endl;
+
+        cout << "----- RAM -----" << endl;
+        for (int i = 0; i < 20; i++) {
+            if (i % 5 == 0) {
+                cout << endl;
+            }
+            cout << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)RAM[i] << " ";
+        }
+        cout << endl;
+
+        cout << "----- ALU RESULTS -----" << endl;
+            for (int i = 0; i < alu_results.size(); i++) {
+                if (i % 25 == 0) {
+                    cout << endl;
+                }
+                cout << std::hex << std::setfill('0') << std::setw(2) << (int)(unsigned char)alu_results[i] << " ";
+            }
+            cout << endl;
+
+        cout << "----- Registers -----" << endl;
+        cout << "A   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_a << endl;
+        cout << "B   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_b << endl;
+        cout << "C   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_c << endl;
+        cout << "F   " << std::setfill('0') << std::setw(4) << flags << endl;
+        cout << "IP  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)IP << endl;
+        cout << "CTR " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)counter << endl;
+
+        cout << "----- STATUS -----" << endl;
+        cout << "OB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)outbus << endl;
+        cout << "IB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)inbus << endl;
+        cout << "HLT " << halted << endl;
+        std::string text = debugConsoleBuffer.str();
+        clear(debugConsole);
+        WriteConsoleA(debugConsole, text.c_str(), text.length(), NULL, NULL);
+
+        cout.rdbuf(old);
 
 
 		handleUserInput();
