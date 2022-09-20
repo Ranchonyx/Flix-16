@@ -395,390 +395,229 @@ int main(int argc, char* argv[]) {
 			std::cout << "(" << disasm << ")" << std::endl;
 
 			//Shitton of code
-			switch (ROM[IP].get_opcode()) {
-			case 0x00:
-				std::this_thread::sleep_for(5ms);
+			
+			switch (ROM[IP].get_opcode()){
+				
+			case 0x00 : std::this_thread::sleep_for(5ms) ; break ;
+			
+			case 0x01 : register_a = imm16 ; break ;
+			case 0x02 : register_b = imm16 ; break ;
+			case 0x03 : register_c = imm16 ; break ;
+			
+			case 0x04 :	register_a = RAM[imm16] ; break ;
+			case 0x05 : register_b = RAM[imm16] ; break ;
+			case 0x06 : register_c = RAM[imm16] ; break ;
+			
+			case 0x07 : RAM[imm16] = register_a ; break ;
+			case 0x08 : RAM[imm16] = register_b ; break ;
+			case 0x09 :	RAM[imm16] = register_c ; break ;
+			case 0x0a :
+			
+				uint16_t partner;
+				
+				switch(reg_a){
+				case 0x00 : partner = register_a ; break ;
+				case 0x01 : partner = register_b ; break ;
+				case 0x02 : partner = register_c ; break ;
+				}
+				
+				switch(reg_b){
+				case 0x00 : register_a = ALU_CALC(ALU_OP::ADD,partner,register_a) ; break ;
+				case 0x01 : register_b = ALU_CALC(ALU_OP::ADD,partner,register_b) ; break ;
+				case 0x02 : register_c = ALU_CALC(ALU_OP::ADD,partner,register_c) ; break ;
+				}
+			
 				break;
-			case 0x01:
-				register_a = imm16;
+			case 0x0b :
+			
+				uint16_t partner;
+				
+				switch(reg_a){
+				case 0x00 : partner = register_a ; break ;
+				case 0x01 : partner = register_b ; break ;
+				case 0x02 : partner = register_c ; break ;
+				}
+				
+				switch(reg_b){
+				case 0x00 : register_a = ALU_CALC(ALU_OP::SUB,partner,register_a) ; break ;
+				case 0x01 : register_b = ALU_CALC(ALU_OP::SUB,partner,register_b) ; break ;
+				case 0x02 : register_c = ALU_CALC(ALU_OP::SUB,partner,register_c) ; break ;
+				}
+				
 				break;
-			case 0x02:
-				register_b = imm16;
+			case 0x0c :
+
+				uint16_t partner;
+				
+				switch(reg_a){
+				case 0x00 : partner = register_a ; break ;
+				case 0x01 : partner = register_b ; break ;
+				case 0x02 : partner = register_c ; break ;
+				}
+				
+				switch(reg_b){
+				case 0x00 : register_a = ALU_CALC(ALU_OP::AND,partner,register_a) ; break ;
+				case 0x01 : register_b = ALU_CALC(ALU_OP::AND,partner,register_b) ; break ;
+				case 0x02 : register_c = ALU_CALC(ALU_OP::AND,partner,register_c) ; break ;
+				}
+
+
 				break;
-			case 0x03:
-				register_c = imm16;
+			case 0x0d :
+
+				uint16_t partner;
+				
+				switch(reg_a){
+				case 0x00 : partner = register_a ; break ;
+				case 0x01 : partner = register_b ; break ;
+				case 0x02 : partner = register_c ; break ;
+				}
+				
+				switch(reg_b){
+				case 0x00 : register_a = ALU_CALC(ALU_OP::OR,partner,register_a) ; break ;
+				case 0x01 : register_b = ALU_CALC(ALU_OP::OR,partner,register_b) ; break ;
+				case 0x02 : register_c = ALU_CALC(ALU_OP::OR,partner,register_c) ; break ;
+				}
+
 				break;
-			case 0x04:
-				register_a = RAM[imm16];
+			case 0x0e :
+
+				uint16_t partner;
+				
+				switch(reg_a){
+				case 0x00 : partner = register_a ; break ;
+				case 0x01 : partner = register_b ; break ;
+				case 0x02 : partner = register_c ; break ;
+				}
+				
+				switch(reg_b){
+				case 0x00 : register_a = ALU_CALC(ALU_OP::NOT,partner,register_a) ; break ;
+				case 0x01 : register_b = ALU_CALC(ALU_OP::NOT,partner,register_b) ; break ;
+				case 0x02 : register_c = ALU_CALC(ALU_OP::NOT,partner,register_c) ; break ;
+				}
+
 				break;
-			case 0x05:
-				register_b = RAM[imm16];
+			case 0x0f :
+
+				uint16_t partner;
+				
+				switch(reg_a){
+				case 0x00 : partner = register_a ; break ;
+				case 0x01 : partner = register_b ; break ;
+				case 0x02 : partner = register_c ; break ;
+				}
+				
+				switch(reg_b){
+				case 0x00 : register_a = ALU_CALC(ALU_OP::NOR,partner,register_a) ; break ;
+				case 0x01 : register_b = ALU_CALC(ALU_OP::NOR,partner,register_b) ; break ;
+				case 0x02 : register_c = ALU_CALC(ALU_OP::NOR,partner,register_c) ; break ;
+				}
+
 				break;
-			case 0x06:
-				register_c = RAM[imm16];
+			case 0x10 :
+
+				uint16_t partner;
+				
+				switch(reg_a){
+				case 0x00 : partner = register_a ; break ;
+				case 0x01 : partner = register_b ; break ;
+				case 0x02 : partner = register_c ; break ;
+				}
+				
+				switch(reg_b){
+				case 0x00 : register_a = ALU_CALC(ALU_OP::NAND,partner,register_a) ; break ;
+				case 0x01 : register_b = ALU_CALC(ALU_OP::NAND,partner,register_b) ; break ;
+				case 0x02 : register_c = ALU_CALC(ALU_OP::NAND,partner,register_c) ; break ;
+				}
+
 				break;
-			case 0x07:
-				RAM[imm16] = register_a;
-				break;
-			case 0x08:
-				RAM[imm16] = register_b;
-				break;
-			case 0x09:
-				RAM[imm16] = register_c;
-				break;
-			case 0x0a:
-				//AREGSEL_A = TRUE
-				if (reg_a == 0x00 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::ADD, register_a, register_a);
-				}
-				if (reg_a == 0x00 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::ADD, register_a, register_b);
-				}
-				if (reg_a == 0x00 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::ADD, register_a, register_c);
-				}
-				//AREGSEL_B = TRUE
-				if (reg_a == 0x01 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::ADD, register_b, register_a);
-				}
-				if (reg_a == 0x01 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::ADD, register_b, register_b);
-				}
-				if (reg_a == 0x01 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::ADD, register_b, register_c);
-				}
-				//AREGSEL_C = TRUE
-				if (reg_a == 0x02 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::ADD, register_c, register_a);
-				}
-				if (reg_a == 0x02 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::ADD, register_c, register_b);
-				}
-				if (reg_a == 0x02 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::ADD, register_c, register_c);
-				}
-				break;
-			case 0x0b:
-				//AREGSEL_A = TRUE
-				if (reg_a == 0x00 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::SUB, register_a, register_a);
-				}
-				if (reg_a == 0x00 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::SUB, register_a, register_b);
-				}
-				if (reg_a == 0x00 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::SUB, register_a, register_c);
-				}
-				//AREGSEL_B = TRUE
-				if (reg_a == 0x01 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::SUB, register_b, register_a);
-				}
-				if (reg_a == 0x01 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::SUB, register_b, register_b);
-				}
-				if (reg_a == 0x01 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::SUB, register_b, register_c);
-				}
-				//AREGSEL_C = TRUE
-				if (reg_a == 0x02 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::SUB, register_c, register_a);
-				}
-				if (reg_a == 0x02 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::SUB, register_c, register_b);
-				}
-				if (reg_a == 0x02 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::SUB, register_c, register_c);
-				}
-				break;
-			case 0x0c:
-				//AREGSEL_A = TRUE
-				if (reg_a == 0x00 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::AND, register_a, register_a);
-				}
-				if (reg_a == 0x00 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::AND, register_a, register_b);
-				}
-				if (reg_a == 0x00 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::AND, register_a, register_c);
-				}
-				//AREGSEL_B = TRUE
-				if (reg_a == 0x01 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::AND, register_b, register_a);
-				}
-				if (reg_a == 0x01 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::AND, register_b, register_b);
-				}
-				if (reg_a == 0x01 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::AND, register_b, register_c);
-				}
-				//AREGSEL_C = TRUE
-				if (reg_a == 0x02 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::AND, register_c, register_a);
-				}
-				if (reg_a == 0x02 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::AND, register_c, register_b);
-				}
-				if (reg_a == 0x02 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::AND, register_c, register_c);
-				}
-				break;
-			case 0x0d:
-				//AREGSEL_A = TRUE
-				if (reg_a == 0x00 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::OR, register_a, register_a);
-				}
-				if (reg_a == 0x00 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::OR, register_a, register_b);
-				}
-				if (reg_a == 0x00 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::OR, register_a, register_c);
-				}
-				//AREGSEL_B = TRUE
-				if (reg_a == 0x01 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::OR, register_b, register_a);
-				}
-				if (reg_a == 0x01 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::OR, register_b, register_b);
-				}
-				if (reg_a == 0x01 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::OR, register_b, register_c);
-				}
-				//AREGSEL_C = TRUE
-				if (reg_a == 0x02 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::OR, register_c, register_a);
-				}
-				if (reg_a == 0x02 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::OR, register_c, register_b);
-				}
-				if (reg_a == 0x02 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::OR, register_c, register_c);
-				}
-				break;
-			case 0x0e:
-				//AREGSEL_A = TRUE
-				if (reg_a == 0x00 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::NOT, register_a, register_a);
-				}
-				if (reg_a == 0x00 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::NOT, register_a, register_b);
-				}
-				if (reg_a == 0x00 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::NOT, register_a, register_c);
-				}
-				//AREGSEL_B = TRUE
-				if (reg_a == 0x01 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::NOT, register_b, register_a);
-				}
-				if (reg_a == 0x01 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::NOT, register_b, register_b);
-				}
-				if (reg_a == 0x01 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::NOT, register_b, register_c);
-				}
-				//AREGSEL_C = TRUE
-				if (reg_a == 0x02 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::NOT, register_c, register_a);
-				}
-				if (reg_a == 0x02 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::NOT, register_c, register_b);
-				}
-				if (reg_a == 0x02 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::NOT, register_c, register_c);
-				}
-				break;
-			case 0x0f:
-				//AREGSEL_A = TRUE
-				if (reg_a == 0x00 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::NOR, register_a, register_a);
-				}
-				if (reg_a == 0x00 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::NOR, register_a, register_b);
-				}
-				if (reg_a == 0x00 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::NOR, register_a, register_c);
-				}
-				//AREGSEL_B = TRUE
-				if (reg_a == 0x01 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::NOR, register_b, register_a);
-				}
-				if (reg_a == 0x01 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::NOR, register_b, register_b);
-				}
-				if (reg_a == 0x01 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::NOR, register_b, register_c);
-				}
-				//AREGSEL_C = TRUE
-				if (reg_a == 0x02 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::NOR, register_c, register_a);
-				}
-				if (reg_a == 0x02 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::NOR, register_c, register_b);
-				}
-				if (reg_a == 0x02 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::NOR, register_c, register_c);
-				}
-				break;
-			case 0x10:
-				//AREGSEL_A = TRUE
-				if (reg_a == 0x00 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::NAND, register_a, register_a);
-				}
-				if (reg_a == 0x00 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::NAND, register_a, register_b);
-				}
-				if (reg_a == 0x00 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::NAND, register_a, register_c);
-				}
-				//AREGSEL_B = TRUE
-				if (reg_a == 0x01 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::NAND, register_b, register_a);
-				}
-				if (reg_a == 0x01 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::NAND, register_b, register_b);
-				}
-				if (reg_a == 0x01 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::NAND, register_b, register_c);
-				}
-				//AREGSEL_C = TRUE
-				if (reg_a == 0x02 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::NAND, register_c, register_a);
-				}
-				if (reg_a == 0x02 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::NAND, register_c, register_b);
-				}
-				if (reg_a == 0x02 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::NAND, register_c, register_c);
-				}
-				break;
-			case 0x11:
-				counter = imm16;
-				break;
-			case 0x12:
-				if (flags.test(3) == true) {
+			case 0x11 : counter = imm16 ; break;
+			case 0x12 :
+
+				if(flags.test(3))
 					counter = imm16;
-				}
+
 				break;
-			case 0x13:
-				if (flags.test(1) == true) {
+			case 0x13 :
+
+				if(flags.test(1))
 					counter = imm16;
-				}
+				
 				break;
-			case 0x14:
-				//AREGSEL_A = TRUE
-				if (reg_a == 0x00 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::XOR, register_a, register_a);
+			case 0x14 :
+
+				uint16_t partner;
+				
+				switch(reg_a){
+				case 0x00 : partner = register_a ; break ;
+				case 0x01 : partner = register_b ; break ;
+				case 0x02 : partner = register_c ; break ;
 				}
-				if (reg_a == 0x00 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::XOR, register_a, register_b);
+				
+				switch(reg_b){
+				case 0x00 : register_a = ALU_CALC(ALU_OP::XOR,partner,register_a) ; break ;
+				case 0x01 : register_b = ALU_CALC(ALU_OP::XOR,partner,register_b) ; break ;
+				case 0x02 : register_c = ALU_CALC(ALU_OP::XOR,partner,register_c) ; break ;
 				}
-				if (reg_a == 0x00 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::XOR, register_a, register_c);
-				}
-				//AREGSEL_B = TRUE
-				if (reg_a == 0x01 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::XOR, register_b, register_a);
-				}
-				if (reg_a == 0x01 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::XOR, register_b, register_b);
-				}
-				if (reg_a == 0x01 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::XOR, register_b, register_c);
-				}
-				//AREGSEL_C = TRUE
-				if (reg_a == 0x02 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::XOR, register_c, register_a);
-				}
-				if (reg_a == 0x02 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::XOR, register_c, register_b);
-				}
-				if (reg_a == 0x02 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::XOR, register_c, register_c);
-				}
+
 				break;
-			case 0x15:
+			case 0x15 :
+
 				std::cout << "Program Halted, press any key to exit." << std::endl;
+			
 				gb1 = _getch();
 				halted = true;
+			
 				break;
-			case 0x16:
-				register_c = inbus;
-				break;
-			case 0x17:
-				outbus = register_c;
-				break;
-			case 0x18:
-				if (flags.test(3) == false) {
+			case 0x16 :	register_c = inbus ; break ;
+			case 0x17 :	outbus = register_c ; break ;
+			case 0x18 :
+
+				if(!flags.test(3))
 					counter = imm16;
-				}
+
 				break;
-			case 0x19:
-				//AREGSEL_A = TRUE
-				if (reg_a == 0x00 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::LSL1, register_a, register_a);
+			case 0x19 :
+
+				uint16_t partner;
+				
+				switch(reg_a){
+				case 0x00 : partner = register_a ; break ;
+				case 0x01 : partner = register_b ; break ;
+				case 0x02 : partner = register_c ; break ;
 				}
-				if (reg_a == 0x00 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::LSL1, register_a, register_b);
+				
+				switch(reg_b){
+				case 0x00 : register_a = ALU_CALC(ALU_OP::LSL1,partner,register_a) ; break ;
+				case 0x01 : register_b = ALU_CALC(ALU_OP::LSL1,partner,register_b) ; break ;
+				case 0x02 : register_c = ALU_CALC(ALU_OP::LSL1,partner,register_c) ; break ;
 				}
-				if (reg_a == 0x00 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::LSL1, register_a, register_c);
-				}
-				//AREGSEL_B = TRUE
-				if (reg_a == 0x01 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::LSL1, register_b, register_a);
-				}
-				if (reg_a == 0x01 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::LSL1, register_b, register_b);
-				}
-				if (reg_a == 0x01 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::LSL1, register_b, register_c);
-				}
-				//AREGSEL_C = TRUE
-				if (reg_a == 0x02 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::LSL1, register_c, register_a);
-				}
-				if (reg_a == 0x02 && reg_b == 0x01) {
-					register_c = ALU_CALC(ALU_OP::LSL1, register_c, register_b);
-				}
-				if (reg_a == 0x02 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::LSL1, register_c, register_c);
-				}
+
 				break;
 			case 0x1a:
-				//AREGSEL_A = TRUE
-				if (reg_a == 0x00 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::LSR1, register_a, register_a);
+
+				uint16_t partner;
+				
+				switch(reg_a){
+				case 0x00 : partner = register_a ; break ;
+				case 0x01 : partner = register_b ; break ;
+				case 0x02 : partner = register_c ; break ;
 				}
-				if (reg_a == 0x00 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::LSR1, register_a, register_b);
+				
+				switch(reg_b){
+				case 0x00 : register_a = ALU_CALC(ALU_OP::LSR1,partner,register_a) ; break ;
+				case 0x01 : register_b = ALU_CALC(ALU_OP::LSR1,partner,register_b) ; break ;
+				case 0x02 : register_c = ALU_CALC(ALU_OP::LSR1,partner,register_c) ; break ;
 				}
-				if (reg_a == 0x00 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::LSR1, register_a, register_c);
-				}
-				//AREGSEL_B = TRUE
-				if (reg_a == 0x01 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::LSR1, register_b, register_a);
-				}
-				if (reg_a == 0x01 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::LSR1, register_b, register_b);
-				}
-				if (reg_a == 0x01 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::LSR1, register_b, register_c);
-				}
-				//AREGSEL_C = TRUE
-				if (reg_a == 0x02 && reg_b == 0x00) {
-					register_a = ALU_CALC(ALU_OP::LSR1, register_c, register_a);
-				}
-				if (reg_a == 0x02 && reg_b == 0x01) {
-					register_b = ALU_CALC(ALU_OP::LSR1, register_c, register_b);
-				}
-				if (reg_a == 0x02 && reg_b == 0x02) {
-					register_c = ALU_CALC(ALU_OP::LSR1, register_c, register_c);
-				}
+
 				break;
-			default:
+			default :
+
 				std::cout << "Unimplemented instruction!" << std::endl;
+			
 				exit(EXIT_FAILURE);
 			}
+			
 			std::this_thread::sleep_for(nanoseconds(delay));
 
 			IP = counter;
