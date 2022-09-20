@@ -1,4 +1,4 @@
-#include "Flix-16-Machine.hpp"
+#include "Flix-16.hpp"
 #include <chrono>
 #include <time.h>
 #include <iostream>
