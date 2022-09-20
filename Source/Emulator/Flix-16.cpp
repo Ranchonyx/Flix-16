@@ -33,38 +33,53 @@ vector<uint16_t>
 	alu_results ;
 
 
-//Memory
-Instruction*	ROM = new Instruction[0xFFFF];
-uint16_t		RAM[0xFFFF];
+//  Memory
 
-//Registers
+Instruction * ROM = new Instruction [0xFFFF];
+uint16_t RAM[0xFFFF];
+
+
+//  Registers
+
 uint16_t
 	register_a ,
 	register_b ,
 	register_c ;
 
-//Binary counter feeds into IP
-uint16_t	counter = 0;
 
-//Instruction Pointer
-uint16_t	IP = 0;
+//  Binary counter feeds into IP
 
-//ALU Flags
+uint16_t counter = 0;
+
+
+//  Instruction Pointer
+
+uint16_t IP = 0;
+
+
+//  ALU Flags
+
 std::bitset<4> flags;
 
-//IO Buses
-uint16_t outbus, inbus;
 
-//Machine in "HALT" state?
-bool		halted = false;
+// IO Buses
 
-//User input stuff
-bool		paused = false;
+uint16_t
+    outbus , inbus;
 
-//Delay after each executed instruction to simulate clock cycle (ms)
-int			delay = 2500;
+bool
+    halted = false ; // Machine in "HALT" state?
+    paused = false ; // User input stuff
 
-HANDLE debugConsole = CreateConsoleScreenBuffer(GENERIC_WRITE | GENERIC_READ, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
+
+//  Delay after each executed instruction to simulate clock cycle (ms)
+
+int delay = 2500;
+
+
+HANDLE debugConsole = CreateConsoleScreenBuffer(
+    GENERIC_WRITE | GENERIC_READ, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
+
 //HANDLE ramConsole = CreateConsoleScreenBuffer(GENERIC_WRITE, 0, NULL, PAGE_GRAPHICS_COHERENT, NULL);
 
 DWORD debugWritten = 0;
@@ -74,22 +89,25 @@ HANDLE mainConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 DWORD mainWritten = 0;
 
 bool debugging = false;
-std::streambuf* old;
+std::streambuf * old;
 
-void clear(HANDLE console) {
+
+void clear(HANDLE console){
+
 	COORD topLeft = { 0, 0 };
 	CONSOLE_SCREEN_BUFFER_INFO screen;
 	DWORD written;
 
-	GetConsoleScreenBufferInfo(console, &screen);
-	FillConsoleOutputCharacterA(
-		console, ' ', screen.dwSize.X * screen.dwSize.Y, topLeft, &written
-	);
-	FillConsoleOutputAttribute(
+	GetConsoleScreenBufferInfo(console,& screen);
+
+    FillConsoleOutputCharacterA(
+        console, ' ', screen.dwSize.X * screen.dwSize.Y, topLeft, &written);
+
+    FillConsoleOutputAttribute(
 		console, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE,
-		screen.dwSize.X * screen.dwSize.Y, topLeft, &written
-	);
-	SetConsoleCursorPosition(console, topLeft);
+		screen.dwSize.X * screen.dwSize.Y, topLeft, &written);
+
+	SetConsoleCursorPosition(console,topLeft);
 }
 
 
@@ -311,8 +329,9 @@ void init() {
 
 	char byte = 0;
 
-	cout << "Flix-16 Emulator. https://github.com/Ranchonyx" << endl;
-	cout << "Enter path to a valid Flix-16 Program: ";
+	cout
+        << "Flix-16 Emulator. https://github.com/Ranchonyx" << endl
+	    << "Enter path to a valid Flix-16 Program: " ;
 
 	std::string filename;
 	std::cin >> filename;
@@ -329,6 +348,7 @@ void init() {
 
 
 	for(int i = 0; i < program.size(); i += 3){
+
 		v_op.push_back(program[i + 0]);
 		v_ra.push_back(program[i + 1]);
 		v_rb.push_back(program[i + 2]);
@@ -355,7 +375,7 @@ ALU_OP opCodeToALUInstruction ( uint8_t opcode ){
     case 0x0e : return ALU_OP::NOT  ;
     case 0x0f : return ALU_OP::NOR  ;
     case 0x10 : return ALU_OP::NAND ;
-    case 0x14 : return ALU_OP::XOR ;
+    case 0x14 : return ALU_OP::XOR  ;
     case 0x19 : return ALU_OP::LSL1 ;
     case 0x1a : return ALU_OP::LSR1 ;
     default:
@@ -392,7 +412,7 @@ int main(int argc,char * argv[]){
     int gb1 = _getch();
 
 
-	//Interprete Flix-16 Machine Code
+	// Interprete Flix-16 Machine Code
 
 	while(!halted){
 
@@ -405,20 +425,27 @@ int main(int argc,char * argv[]){
 
         handleBreakPointHit();
 
-        std::string disasm = ROM[IP].toAssembly();
-        uint8_t reg_a = ROM[IP].get_a();
-        uint8_t reg_b = ROM[IP].get_b();
-        uint8_t opcode = ROM[IP].get_opcode();
-        uint16_t imm16 = ROM[IP].get_value();
+        auto instruction = ROM[IP];
+
+
+        uint8_t
+            opcode = instruction.get_opcode() ,
+            reg_a = instruction.get_a() ,
+            reg_b = instruction.get_b() ;
+
+        uint16_t imm16 = instruction.get_value();
 
         SetConsoleTitleA("Executing...");
-        cout << "[" << std::hex << std::setfill('0') << std::setw(2) << (int)(unsigned char)IP << "]" << " ";
-        cout << "Executing ";
-        cout << "(" << disasm << ")" << endl;
 
-        //Shitton of code
+        std::string disasm = instruction.toAssembly();
 
-        switch (ROM[IP].get_opcode()){
+        cout
+            << "[" << std::hex << std::setfill('0') << std::setw(2)
+            << (int)(unsigned char)IP << "]" << " " << "Executing "
+            << "(" << disasm << ")" << endl ;
+
+
+        switch(opcode){
 
         case 0x00 : std::this_thread::sleep_for(5ms) ; break ;
 
@@ -434,16 +461,13 @@ int main(int argc,char * argv[]){
         case 0x08 : RAM[imm16] = register_b ; break ;
         case 0x09 :	RAM[imm16] = register_c ; break ;
 
-        case 0x0a :
-        case 0x0b :
-        case 0x0c :
-        case 0x0d :
-        case 0x0e :
-        case 0x0f :
-        case 0x10 :
-        case 0x14 :
-        case 0x19 :
-        case 0x1a:
+        case 0x16 :	register_c = inbus  ; break ;
+        case 0x11 : counter = imm16     ; break;
+        case 0x17 :	outbus = register_c ; break ;
+
+        case 0x0a : case 0x0b : case 0x0c : case 0x0d :
+        case 0x0e : case 0x0f : case 0x10 : case 0x14 :
+        case 0x19 : case 0x1a :
 
 
             uint16_t partner;
@@ -461,7 +485,6 @@ int main(int argc,char * argv[]){
             }
 
             break;
-        case 0x11 : counter = imm16 ; break;
         case 0x12 :
 
             if(flags.test(3))
@@ -474,20 +497,18 @@ int main(int argc,char * argv[]){
                 counter = imm16;
 
             break;
+        case 0x18 :
+
+            if(!flags.test(3))
+                counter = imm16;
+
+            break;
         case 0x15 :
 
             cout << "Program Halted, press any key to exit." << endl;
 
             gb1 = _getch();
             halted = true;
-
-            break;
-        case 0x16 :	register_c = inbus ; break ;
-        case 0x17 :	outbus = register_c ; break ;
-        case 0x18 :
-
-            if(!flags.test(3))
-                counter = imm16;
 
             break;
         default :
@@ -501,62 +522,68 @@ int main(int argc,char * argv[]){
 
         IP = counter;
 
-        //Write debug stuff to other console
+
+        // Write debug stuff to other console
+
         std::stringstream debugConsoleBuffer;
         old = cout.rdbuf(debugConsoleBuffer.rdbuf());
 
-        cout << "----- INSTRUCTION -----" << endl;
-        cout << "(" << disasm << ")" << endl;
+        cout
+            << "----- INSTRUCTION -----" << endl
+            << "(" << disasm << ")" << endl
+            << "----- RAM -----" << endl ;
 
-        cout << "----- RAM -----" << endl;
         for (int i = 0; i < 20; i++) {
-            if (i % 5 == 0) {
+
+            if(i % 5 == 0)
                 cout << endl;
-            }
-            cout << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)RAM[i] << " ";
+
+            cout
+                << std::hex << std::setfill('0') << std::setw(4)
+                << (int)(unsigned char)RAM[i] << " " ;
         }
+
         cout << endl;
 
         cout << "----- ALU RESULTS -----" << endl;
-            for (int i = 0; i < alu_results.size(); i++) {
-                if (i % 25 == 0) {
-                    cout << endl;
-                }
-                cout << std::hex << std::setfill('0') << std::setw(2) << (int)(unsigned char)alu_results[i] << " ";
+
+        for (int i = 0; i < alu_results.size(); i++) {
+            if (i % 25 == 0) {
+                cout << endl;
             }
-            cout << endl;
+            cout << std::hex << std::setfill('0') << std::setw(2) << (int)(unsigned char)alu_results[i] << " ";
+        }
 
-        cout << "----- Registers -----" << endl;
-        cout << "A   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_a << endl;
-        cout << "B   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_b << endl;
-        cout << "C   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_c << endl;
-        cout << "F   " << std::setfill('0') << std::setw(4) << flags << endl;
-        cout << "IP  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)IP << endl;
-        cout << "CTR " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)counter << endl;
+        cout
+            << endl << "----- Registers -----"
+            << endl << "A   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_a
+            << endl << "B   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_b
+            << endl << "C   " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)register_c
+            << endl << "F   " << std::setfill('0') << std::setw(4) << flags
+            << endl << "IP  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)IP
+            << endl << "CTR " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)counter
+            << endl << "----- STATUS -----"
+            << endl << "OB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)outbus
+            << endl << "IB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)inbus
+            << endl << "HLT " << halted
+            << endl ;
 
-        cout << "----- STATUS -----" << endl;
-        cout << "OB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)outbus << endl;
-        cout << "IB  " << std::hex << std::setfill('0') << std::setw(4) << (int)(unsigned char)inbus << endl;
-        cout << "HLT " << halted << endl;
         std::string text = debugConsoleBuffer.str();
+
         clear(debugConsole);
         WriteConsoleA(debugConsole, text.c_str(), text.length(), NULL, NULL);
 
         cout.rdbuf(old);
 
-
 		handleUserInput();
-
 
 		//std::this_thread::sleep_until(system_clock::now() + 1s);
 	}
 
+
 	cout.rdbuf(old);
 
-	cout
-		<< endl;
-		<< "Execution finished."
-		<< endl;
+	cout << endl << "Execution finished." << endl ;
 
 	return EXIT_SUCCESS;
 }
