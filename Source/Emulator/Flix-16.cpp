@@ -344,6 +344,29 @@ void init() {
 	clear(mainConsole);
 }
 
+
+ALU_OP opCodeToALUInstruction ( uint8_t opcode ){
+
+    switch(opcode){
+    case 0x0a : return ALU_OP::ADD  ;
+    case 0x0b : return ALU_OP::SUB  ;
+    case 0x0c : return ALU_OP::AND  ;
+    case 0x0d : return ALU_OP::OR   ;
+    case 0x0e : return ALU_OP::NOT  ;
+    case 0x0f : return ALU_OP::NOR  ;
+    case 0x10 : return ALU_OP::NAND ;
+    case 0x14 : return ALU_OP::XOR ;
+    case 0x19 : return ALU_OP::LSL1 ;
+    case 0x1a : return ALU_OP::LSR1 ;
+    default:
+
+        cout << "Not an ALU instruction!" << endl;
+
+        exit(EXIT_FAILURE);
+    }
+}
+
+
 int main(int argc,char * argv[]){
 
 	init();
@@ -410,110 +433,18 @@ int main(int argc,char * argv[]){
         case 0x07 : RAM[imm16] = register_a ; break ;
         case 0x08 : RAM[imm16] = register_b ; break ;
         case 0x09 :	RAM[imm16] = register_c ; break ;
+
         case 0x0a :
-
-            uint16_t partner;
-
-            switch(reg_a){
-            case 0x00 : partner = register_a ; break ;
-            case 0x01 : partner = register_b ; break ;
-            case 0x02 : partner = register_c ; break ;
-            }
-
-            switch(reg_b){
-            case 0x00 : register_a = ALU_CALC(ALU_OP::ADD,partner,register_a) ; break ;
-            case 0x01 : register_b = ALU_CALC(ALU_OP::ADD,partner,register_b) ; break ;
-            case 0x02 : register_c = ALU_CALC(ALU_OP::ADD,partner,register_c) ; break ;
-            }
-
-            break;
         case 0x0b :
-
-            uint16_t partner;
-
-            switch(reg_a){
-            case 0x00 : partner = register_a ; break ;
-            case 0x01 : partner = register_b ; break ;
-            case 0x02 : partner = register_c ; break ;
-            }
-
-            switch(reg_b){
-            case 0x00 : register_a = ALU_CALC(ALU_OP::SUB,partner,register_a) ; break ;
-            case 0x01 : register_b = ALU_CALC(ALU_OP::SUB,partner,register_b) ; break ;
-            case 0x02 : register_c = ALU_CALC(ALU_OP::SUB,partner,register_c) ; break ;
-            }
-
-            break;
         case 0x0c :
-
-            uint16_t partner;
-
-            switch(reg_a){
-            case 0x00 : partner = register_a ; break ;
-            case 0x01 : partner = register_b ; break ;
-            case 0x02 : partner = register_c ; break ;
-            }
-
-            switch(reg_b){
-            case 0x00 : register_a = ALU_CALC(ALU_OP::AND,partner,register_a) ; break ;
-            case 0x01 : register_b = ALU_CALC(ALU_OP::AND,partner,register_b) ; break ;
-            case 0x02 : register_c = ALU_CALC(ALU_OP::AND,partner,register_c) ; break ;
-            }
-
-
-            break;
         case 0x0d :
-
-            uint16_t partner;
-
-            switch(reg_a){
-            case 0x00 : partner = register_a ; break ;
-            case 0x01 : partner = register_b ; break ;
-            case 0x02 : partner = register_c ; break ;
-            }
-
-            switch(reg_b){
-            case 0x00 : register_a = ALU_CALC(ALU_OP::OR,partner,register_a) ; break ;
-            case 0x01 : register_b = ALU_CALC(ALU_OP::OR,partner,register_b) ; break ;
-            case 0x02 : register_c = ALU_CALC(ALU_OP::OR,partner,register_c) ; break ;
-            }
-
-            break;
         case 0x0e :
-
-            uint16_t partner;
-
-            switch(reg_a){
-            case 0x00 : partner = register_a ; break ;
-            case 0x01 : partner = register_b ; break ;
-            case 0x02 : partner = register_c ; break ;
-            }
-
-            switch(reg_b){
-            case 0x00 : register_a = ALU_CALC(ALU_OP::NOT,partner,register_a) ; break ;
-            case 0x01 : register_b = ALU_CALC(ALU_OP::NOT,partner,register_b) ; break ;
-            case 0x02 : register_c = ALU_CALC(ALU_OP::NOT,partner,register_c) ; break ;
-            }
-
-            break;
         case 0x0f :
-
-            uint16_t partner;
-
-            switch(reg_a){
-            case 0x00 : partner = register_a ; break ;
-            case 0x01 : partner = register_b ; break ;
-            case 0x02 : partner = register_c ; break ;
-            }
-
-            switch(reg_b){
-            case 0x00 : register_a = ALU_CALC(ALU_OP::NOR,partner,register_a) ; break ;
-            case 0x01 : register_b = ALU_CALC(ALU_OP::NOR,partner,register_b) ; break ;
-            case 0x02 : register_c = ALU_CALC(ALU_OP::NOR,partner,register_c) ; break ;
-            }
-
-            break;
         case 0x10 :
+        case 0x14 :
+        case 0x19 :
+        case 0x1a:
+
 
             uint16_t partner;
 
@@ -524,9 +455,9 @@ int main(int argc,char * argv[]){
             }
 
             switch(reg_b){
-            case 0x00 : register_a = ALU_CALC(ALU_OP::NAND,partner,register_a) ; break ;
-            case 0x01 : register_b = ALU_CALC(ALU_OP::NAND,partner,register_b) ; break ;
-            case 0x02 : register_c = ALU_CALC(ALU_OP::NAND,partner,register_c) ; break ;
+            case 0x00 : register_a = ALU_CALC(operation,partner,register_a) ; break ;
+            case 0x01 : register_b = ALU_CALC(operation,partner,register_b) ; break ;
+            case 0x02 : register_c = ALU_CALC(operation,partner,register_c) ; break ;
             }
 
             break;
@@ -543,23 +474,6 @@ int main(int argc,char * argv[]){
                 counter = imm16;
 
             break;
-        case 0x14 :
-
-            uint16_t partner;
-
-            switch(reg_a){
-            case 0x00 : partner = register_a ; break ;
-            case 0x01 : partner = register_b ; break ;
-            case 0x02 : partner = register_c ; break ;
-            }
-
-            switch(reg_b){
-            case 0x00 : register_a = ALU_CALC(ALU_OP::XOR,partner,register_a) ; break ;
-            case 0x01 : register_b = ALU_CALC(ALU_OP::XOR,partner,register_b) ; break ;
-            case 0x02 : register_c = ALU_CALC(ALU_OP::XOR,partner,register_c) ; break ;
-            }
-
-            break;
         case 0x15 :
 
             cout << "Program Halted, press any key to exit." << endl;
@@ -574,40 +488,6 @@ int main(int argc,char * argv[]){
 
             if(!flags.test(3))
                 counter = imm16;
-
-            break;
-        case 0x19 :
-
-            uint16_t partner;
-
-            switch(reg_a){
-            case 0x00 : partner = register_a ; break ;
-            case 0x01 : partner = register_b ; break ;
-            case 0x02 : partner = register_c ; break ;
-            }
-
-            switch(reg_b){
-            case 0x00 : register_a = ALU_CALC(ALU_OP::LSL1,partner,register_a) ; break ;
-            case 0x01 : register_b = ALU_CALC(ALU_OP::LSL1,partner,register_b) ; break ;
-            case 0x02 : register_c = ALU_CALC(ALU_OP::LSL1,partner,register_c) ; break ;
-            }
-
-            break;
-        case 0x1a:
-
-            uint16_t partner;
-
-            switch(reg_a){
-            case 0x00 : partner = register_a ; break ;
-            case 0x01 : partner = register_b ; break ;
-            case 0x02 : partner = register_c ; break ;
-            }
-
-            switch(reg_b){
-            case 0x00 : register_a = ALU_CALC(ALU_OP::LSR1,partner,register_a) ; break ;
-            case 0x01 : register_b = ALU_CALC(ALU_OP::LSR1,partner,register_b) ; break ;
-            case 0x02 : register_c = ALU_CALC(ALU_OP::LSR1,partner,register_c) ; break ;
-            }
 
             break;
         default :

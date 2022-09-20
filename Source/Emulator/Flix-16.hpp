@@ -75,7 +75,7 @@ Instr_Type determineInstructionType(uint8_t v) {
 	if (v == 0x00 || v == 0x15) {
 		return Instr_Type::MISC;
 	}
-	
+
 	return Instr_Type::MISC;
 }
 
@@ -108,6 +108,9 @@ std::string mnemonics[] = {
 "LSL1",
 "LSR1"
 };
+
+
+
 
 
 class Instruction {
